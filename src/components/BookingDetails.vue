@@ -23,6 +23,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ApiService } from '@/services/ApiService'
 import type { Booking } from '@/types'
 
 const route = useRoute()
@@ -51,13 +52,7 @@ const formatDate = (dateString: string): string => {
 
 const fetchBookingDetails = async () => {
   try {
-    const response = await fetch(
-      `https://605c94c36d85de00170da8b4.mockapi.io/stations/${stationId.value}/bookings/${bookingId.value}`
-    )
-    if (!response.ok) {
-      throw new Error('Failed to fetch booking details')
-    }
-    booking.value = await response.json()
+    booking.value = await ApiService.getBookingDetails(stationId.value, bookingId.value)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An unknown error occurred'
   }

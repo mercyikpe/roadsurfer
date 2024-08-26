@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
 import BookingDetails from '@/components/BookingDetails.vue'
 import type { Booking } from '@/types'
-import { ApiService } from '@/services/api'
+import { ApiService } from '@/services/ApiService'
 
 vi.mock('@/services/ApiService')
 

@@ -22,11 +22,11 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { Station } from '@/types'
+import type { Station } from '@/types'
+import { ApiService } from '@/services/ApiService'
 
 const props = defineProps<{
   placeholder: string
-  apiUrl: string
 }>()
 
 const emit = defineEmits<{
@@ -40,8 +40,7 @@ const showResults = ref(false)
 const handleInput = async () => {
   if (searchQuery.value.length > 2) {
     try {
-      const response = await fetch(`${props.apiUrl}?search=${searchQuery.value}`)
-      results.value = await response.json()
+      results.value = await ApiService.getStations(searchQuery.value)
       showResults.value = true
     } catch (error) {
       console.error('Error fetching results:', error)

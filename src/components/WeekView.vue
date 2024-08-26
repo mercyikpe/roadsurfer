@@ -40,7 +40,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookingStore } from '../stores/store'
-import { ApiService } from '../services/api'
+import { ApiService } from '../services/ApiService'
 import Autocomplete from './Autocomplete.vue'
 import type { Station, Booking } from '@/types'
 import { startOfWeek, addDays, format, parseISO, min } from 'date-fns'
@@ -49,7 +49,7 @@ const router = useRouter()
 const bookingStore = useBookingStore()
 
 const currentWeekStart = ref(new Date())
-const stationsApiUrl = 'https://605c94c36d85de00170da8b4.mockapi.io/stations'
+const stationsApiUrl = '' // Not needed anymore since we are using ApiService
 
 const weekDays = computed(() => {
   const days = []
