@@ -4,12 +4,12 @@
     <div v-if="loading">
       <p>Loading booking details...</p>
     </div>
-    <div v-else-if="booking">
-      <p><strong>Customer Name:</strong> {{ booking.customerName }}</p>
-      <p><strong>Start Date:</strong> {{ formatDate(booking.startDate) }}</p>
-      <p><strong>End Date:</strong> {{ formatDate(booking.endDate) }}</p>
+    <div v-else-if="bookingStore.bookingDetails">
+      <p><strong>Customer Name:</strong> {{ bookingStore.bookingDetails.customerName }}</p>
+      <p><strong>Start Date:</strong> {{ formatDate(bookingStore.bookingDetails.startDate) }}</p>
+      <p><strong>End Date:</strong> {{ formatDate(bookingStore.bookingDetails.endDate) }}</p>
       <p><strong>Duration:</strong> {{ bookingDuration }} days</p>
-      <p><strong>Pickup-Return Station:</strong> {{ booking.stationName || 'Unknown Station' }}</p>
+      <p><strong>Pickup-Return Station:</strong> {{ bookingStore.bookingDetails.stationName }}</p>
     </div>
     <div v-else-if="error">
       <p class="text-red-500">Error: {{ error }}</p>
@@ -23,23 +23,22 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ApiService } from '@/services/ApiService'
-import type { Booking, Station } from '@/types'
+import { useBookingStore } from '@/stores/BookingStore'
 
 const route = useRoute()
 const router = useRouter()
+const bookingStore = useBookingStore()
 
-const booking = ref<Booking | null>(null)
 const error = ref<string | null>(null)
-const loading = ref<boolean>(true) // Added loading state
+const loading = ref<boolean>(true)
 
 const stationId = computed(() => route.params.stationId as string)
 const bookingId = computed(() => route.params.bookingId as string)
 
 const bookingDuration = computed(() => {
-  if (booking.value) {
-    const start = new Date(booking.value.startDate)
-    const end = new Date(booking.value.endDate)
+  if (bookingStore.bookingDetails) {
+    const start = new Date(bookingStore.bookingDetails.startDate)
+    const end = new Date(bookingStore.bookingDetails.endDate)
     const diffTime = Math.abs(end.getTime() - start.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
@@ -53,26 +52,11 @@ const formatDate = (dateString: string): string => {
 
 const fetchBookingDetails = async () => {
   try {
-    // Fetch station data
-    const stations = await ApiService.getStations('')
-
-    // Fetch booking details
-    const bookingDetails = await ApiService.getBookingDetails(stationId.value, bookingId.value)
-
-    // Find the station name based on pickupReturnStationId
-    const matchedStation = stations.find(
-      (station: Station) => station.id === bookingDetails.pickupReturnStationId
-    )
-
-    // Set station name in the booking object
-    booking.value = {
-      ...bookingDetails,
-      stationName: matchedStation ? matchedStation.name : 'Unknown Station'
-    }
+    await bookingStore.fetchBookingDetails(stationId.value, bookingId.value)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An unknown error occurred'
   } finally {
-    loading.value = false // Ensure loading is set to false after data is fetched or an error occurs
+    loading.value = false
   }
 }
 

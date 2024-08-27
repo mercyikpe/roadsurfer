@@ -20,7 +20,7 @@
       Current Station: {{ bookingStore.selectedStation.name }}
     </p>
 
-    <Autocomplete :apiUrl="stationsApiUrl" @selected="handleStationSelected" />
+    <Autocomplete @selected="handleStationSelected" />
 
     <div class="grid grid-cols-7 gap-4">
       <div v-for="day in weekDays" :key="day.date" class="border rounded p-4">
@@ -37,12 +37,9 @@
             }"
             class="p-2 rounded cursor-pointer text-xs space-y-2"
           >
-            <span class="block">{{ bookingEntry.booking.customerName }}: </span>
-
-            <span class="block">{{ bookingEntry.isStart ? 'Booking Start' : '' }}:</span>
-
-            <span class="block">{{ bookingEntry.isEnd ? 'Booking End' : '' }} </span>
-
+            <span class="block">{{ bookingEntry.booking.customerName }}</span>
+            <span class="block">{{ bookingEntry.isStart ? 'Booking Start' : '' }}</span>
+            <span class="block">{{ bookingEntry.isEnd ? 'Booking End' : '' }}</span>
             <span
               >{{ formatDisplayDate(bookingEntry.booking.startDate) }} -
               {{ formatDisplayDate(bookingEntry.booking.endDate) }}</span
@@ -57,20 +54,17 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useBookingStore } from '../stores/store'
-import { ApiService } from '../services/ApiService'
-import Autocomplete from './Autocomplete.vue'
-import type { Station, Booking } from '@/types'
+import { useBookingStore } from '@/stores/BookingStore'
 import { startOfWeek, addDays, format, parseISO, min } from 'date-fns'
+import Autocomplete from './Autocomplete.vue'
+import type { Booking, Station } from '@/types'
 
 const router = useRouter()
 const bookingStore = useBookingStore()
 
 const errorMessage = ref<string | null>(null)
 const isLoading = ref(false)
-
 const currentWeekStart = ref(new Date())
-const stationsApiUrl = '' // Not needed anymore since we are using ApiService
 
 const formatDisplayDate = (dateString: string) => {
   return format(parseISO(dateString), 'MMM dd, yyyy')
@@ -102,29 +96,22 @@ const nextWeek = () => {
   currentWeekStart.value = addDays(currentWeekStart.value, 7)
 }
 
-const handleStationSelected = (station: Station) => {
+const handleStationSelected = async (station: Station) => {
   bookingStore.setSelectedStation(station)
-  fetchBookings()
+  await fetchBookings()
 }
 
 const fetchBookings = async () => {
   if (bookingStore.selectedStation) {
     try {
-      const fetchedBookings = await ApiService.getBookings(
-        bookingStore.selectedStation.id,
-        '', // We're not using date range filtering here
-        ''
-      )
-      bookingStore.setBookings(fetchedBookings)
-
+      await bookingStore.fetchBookings(bookingStore.selectedStation.id)
+      const fetchedBookings = bookingStore.bookings
       if (fetchedBookings.length > 0) {
         const dates = fetchedBookings.flatMap((booking) => [
           parseISO(booking.startDate),
           parseISO(booking.endDate)
         ])
         const earliestDate = min(dates)
-        // const latestDate = max(dates)
-
         currentWeekStart.value = startOfWeek(earliestDate)
       }
     } catch (error) {
@@ -154,51 +141,19 @@ const bookingsForDay = (date: string): { booking: Booking; isStart: boolean; isE
 const showBookingDetails = (booking: Booking) => {
   router.push(`/booking/${bookingStore.selectedStation?.id}/${booking.id}`)
 }
+
 const fetchInitialData = async () => {
   isLoading.value = true
-  errorMessage.value = null // Reset any previous error message
+  errorMessage.value = null
   try {
-    const stations = await ApiService.getStations('')
-    if (stations.length > 0) {
-      bookingStore.setSelectedStation(stations[0])
-      await fetchBookings()
-    } else {
-      errorMessage.value = 'No stations available.'
-    }
-  } catch (error) {
-    console.error('Error fetching initial data:', error)
-    errorMessage.value = 'Failed to fetch station data. Please try again later.'
+    await bookingStore.fetchStations('') // Automatically selects the first station and fetches bookings
+    // If needed, you can handle additional logic here after the bookings are fetched
+  } catch (error: any) {
+    errorMessage.value = error.message
   } finally {
     isLoading.value = false
   }
 }
-
-// const fetchInitialData = async () => {
-//   try {
-//     const stations = await ApiService.getStations('')
-//     if (stations.length > 0) {
-//       bookingStore.setSelectedStation(stations[0])
-//       await fetchBookings()
-//     } else {
-//       errorMessage.value = 'No stations available.'
-//     }
-//   } catch (error) {
-//     console.error('Error fetching initial data:', error)
-//     errorMessage.value = 'Failed to fetch station data. Please try again later.'
-//   }
-// }
-
-// const fetchInitialData = async () => {
-//   try {
-//     const stations = await ApiService.getStations('')
-//     if (stations.length > 0) {
-//       bookingStore.setSelectedStation(stations[0])
-//       await fetchBookings()
-//     }
-//   } catch (error) {
-//     console.error('Error fetching initial data:', error)
-//   }
-// }
 
 onMounted(() => {
   fetchInitialData()
