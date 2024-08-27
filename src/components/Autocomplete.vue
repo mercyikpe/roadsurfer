@@ -35,7 +35,7 @@ const results = ref<Station[]>([])
 const showResults = ref(false)
 
 const handleInput = async () => {
-  if (searchQuery.value.length > 2) {
+  if (searchQuery.value.length > 1) {
     try {
       results.value = await ApiService.getStations(searchQuery.value)
       showResults.value = true

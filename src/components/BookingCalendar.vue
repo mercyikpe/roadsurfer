@@ -13,18 +13,32 @@
     </p>
 
     <Autocomplete :apiUrl="stationsApiUrl" @selected="handleStationSelected" />
+
     <div class="grid grid-cols-7 gap-4">
       <div v-for="day in weekDays" :key="day.date" class="border rounded p-4">
         <h3 class="font-bold">{{ day.name }}</h3>
-        <p class="text-sm">{{ day.date }}</p>
+        <p class="text-sm">{{ formatDisplayDate(day.date) }}</p>
         <ul class="mt-2 space-y-2">
           <li
-            v-for="booking in bookingsForDay(day.date)"
-            :key="booking.id"
-            @click="showBookingDetails(booking)"
-            class="bg-blue-100 text-black p-2 rounded cursor-pointer"
+            v-for="bookingEntry in bookingsForDay(day.date)"
+            :key="bookingEntry.booking.id"
+            @click="showBookingDetails(bookingEntry.booking)"
+            :class="{
+              'bg-blue-500 text-white': bookingEntry.isStart,
+              'bg-red-500 text-white': bookingEntry.isEnd
+            }"
+            class="p-2 rounded cursor-pointer text-xs space-y-2"
           >
-            {{ booking.id }} - {{ booking.customerName }}
+            <span class="block">{{ bookingEntry.booking.customerName }}: </span>
+
+            <span class="block">{{ bookingEntry.isStart ? 'Booking Start' : '' }}:</span>
+
+            <span class="block">{{ bookingEntry.isEnd ? 'Booking End' : '' }} </span>
+
+            <span
+              >{{ formatDisplayDate(bookingEntry.booking.startDate) }} -
+              {{ formatDisplayDate(bookingEntry.booking.endDate) }}</span
+            >
           </li>
         </ul>
       </div>
@@ -47,6 +61,10 @@ const bookingStore = useBookingStore()
 const currentWeekStart = ref(new Date())
 const stationsApiUrl = '' // Not needed anymore since we are using ApiService
 
+const formatDisplayDate = (dateString: string) => {
+  return format(parseISO(dateString), 'MMM dd, yyyy')
+}
+
 const weekDays = computed(() => {
   const days = []
   for (let i = 0; i < 7; i++) {
@@ -60,8 +78,8 @@ const weekDays = computed(() => {
 })
 
 const formattedWeekRange = computed(() => {
-  const start = format(currentWeekStart.value, 'MM/dd/yyyy')
-  const end = format(addDays(currentWeekStart.value, 6), 'MM/dd/yyyy')
+  const start = format(currentWeekStart.value, 'MMM dd, yyyy')
+  const end = format(addDays(currentWeekStart.value, 6), 'MMM dd, yyyy')
   return `${start} - ${end}`
 })
 
@@ -104,12 +122,21 @@ const fetchBookings = async () => {
   }
 }
 
-const bookingsForDay = (date: string): Booking[] => {
-  return bookingStore.bookings.filter((booking) => {
-    const bookingStart = parseISO(booking.startDate)
-    const bookingEnd = parseISO(booking.endDate)
-    const currentDate = parseISO(date)
-    return currentDate >= bookingStart && currentDate <= bookingEnd
+const bookingsForDay = (date: string): { booking: Booking; isStart: boolean; isEnd: boolean }[] => {
+  return bookingStore.bookings.flatMap((booking) => {
+    const bookingStart = format(parseISO(booking.startDate), 'yyyy-MM-dd')
+    const bookingEnd = format(parseISO(booking.endDate), 'yyyy-MM-dd')
+    const isStart = bookingStart === date
+    const isEnd = bookingEnd === date
+
+    let result = []
+    if (isStart) {
+      result.push({ booking, isStart: true, isEnd: false })
+    }
+    if (isEnd) {
+      result.push({ booking, isStart: false, isEnd: true })
+    }
+    return result
   })
 }
 
