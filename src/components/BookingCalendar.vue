@@ -1,5 +1,13 @@
 <template>
-  <div class="space-y-4">
+  <div v-if="isLoading" class="text-center p-4">
+    <p>Loading data, please wait...</p>
+  </div>
+
+  <div v-else-if="errorMessage" class="bg-red-500 text-white p-4 rounded mb-4">
+    {{ errorMessage }}
+  </div>
+
+  <div v-else class="space-y-4">
     <div class="flex justify-between items-center">
       <button @click="previousWeek" class="px-4 py-2 bg-blue-500 text-white rounded">
         Previous
@@ -57,6 +65,9 @@ import { startOfWeek, addDays, format, parseISO, min } from 'date-fns'
 
 const router = useRouter()
 const bookingStore = useBookingStore()
+
+const errorMessage = ref<string | null>(null)
+const isLoading = ref(false)
 
 const currentWeekStart = ref(new Date())
 const stationsApiUrl = '' // Not needed anymore since we are using ApiService
@@ -143,18 +154,51 @@ const bookingsForDay = (date: string): { booking: Booking; isStart: boolean; isE
 const showBookingDetails = (booking: Booking) => {
   router.push(`/booking/${bookingStore.selectedStation?.id}/${booking.id}`)
 }
-
 const fetchInitialData = async () => {
+  isLoading.value = true
+  errorMessage.value = null // Reset any previous error message
   try {
     const stations = await ApiService.getStations('')
     if (stations.length > 0) {
       bookingStore.setSelectedStation(stations[0])
       await fetchBookings()
+    } else {
+      errorMessage.value = 'No stations available.'
     }
   } catch (error) {
     console.error('Error fetching initial data:', error)
+    errorMessage.value = 'Failed to fetch station data. Please try again later.'
+  } finally {
+    isLoading.value = false
   }
 }
+
+// const fetchInitialData = async () => {
+//   try {
+//     const stations = await ApiService.getStations('')
+//     if (stations.length > 0) {
+//       bookingStore.setSelectedStation(stations[0])
+//       await fetchBookings()
+//     } else {
+//       errorMessage.value = 'No stations available.'
+//     }
+//   } catch (error) {
+//     console.error('Error fetching initial data:', error)
+//     errorMessage.value = 'Failed to fetch station data. Please try again later.'
+//   }
+// }
+
+// const fetchInitialData = async () => {
+//   try {
+//     const stations = await ApiService.getStations('')
+//     if (stations.length > 0) {
+//       bookingStore.setSelectedStation(stations[0])
+//       await fetchBookings()
+//     }
+//   } catch (error) {
+//     console.error('Error fetching initial data:', error)
+//   }
+// }
 
 onMounted(() => {
   fetchInitialData()
