@@ -40,10 +40,10 @@
             <span class="block">{{ bookingEntry.booking.customerName }}</span>
             <span class="block">{{ bookingEntry.isStart ? 'Booking Start' : '' }}</span>
             <span class="block">{{ bookingEntry.isEnd ? 'Booking End' : '' }}</span>
-            <span
-              >{{ formatDisplayDate(bookingEntry.booking.startDate) }} -
-              {{ formatDisplayDate(bookingEntry.booking.endDate) }}</span
-            >
+            <span>
+              {{ formatDisplayDate(bookingEntry.booking.startDate) }} -
+              {{ formatDisplayDate(bookingEntry.booking.endDate) }}
+            </span>
           </li>
         </ul>
       </div>
@@ -112,7 +112,7 @@ const fetchBookings = async () => {
           parseISO(booking.endDate)
         ])
         const earliestDate = min(dates)
-        currentWeekStart.value = startOfWeek(earliestDate)
+        currentWeekStart.value = startOfWeek(earliestDate) // Ensure the calendar starts with the correct week
       }
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -147,7 +147,7 @@ const fetchInitialData = async () => {
   errorMessage.value = null
   try {
     await bookingStore.fetchStations('') // Automatically selects the first station and fetches bookings
-    // If needed, you can handle additional logic here after the bookings are fetched
+    await fetchBookings() // Load bookings for the first station and display them on the calendar
   } catch (error: any) {
     errorMessage.value = error.message
   } finally {
