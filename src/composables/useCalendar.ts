@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { startOfWeek, addDays, format, parseISO } from 'date-fns'
+import { addDays, format, parseISO } from 'date-fns'
 
 export function useCalendar() {
   const currentWeekStart = ref(new Date())

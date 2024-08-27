@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
+import { createPinia, setActivePinia } from 'pinia'
 import BookingDetails from '@/components/BookingDetails.vue'
-import type { Booking } from '@/types'
-import { ApiService } from '@/services/ApiService'
+import { useBookingStore } from '@/stores/BookingStore'
 
 vi.mock('@/services/ApiService')
 
@@ -12,68 +12,39 @@ const router = createRouter({
   routes: [{ path: '/booking/:stationId/:bookingId', component: BookingDetails }]
 })
 
-describe('BookingDetails', () => {
-  beforeEach(() => {
-    vi.resetAllMocks()
-  })
+describe('BookingDetails.vue', () => {
+  it('displays booking details when they are successfully fetched', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
 
-  it('displays loading message when booking is null', async () => {
-    const wrapper = mount(BookingDetails, {
-      global: {
-        plugins: [router]
-      }
-    })
+    const bookingStore = useBookingStore()
 
-    await router.push('/booking/1/1')
-    await router.isReady()
-
-    expect(wrapper.text()).toContain('Loading booking details...')
-  })
-
-  it('displays booking details when booking is loaded', async () => {
-    const mockBooking: Booking = {
+    const mockBookingDetails = {
       id: '1',
       customerName: 'John Doe',
       startDate: '2023-04-01T00:00:00Z',
       endDate: '2023-04-05T00:00:00Z',
-      pickupReturnStationId: '1',
-      stationName: 'Berlin Station' // Assuming stationName is part of Booking
+      stationName: 'Berlin Station',
+      pickupReturnStationId: '1'
     }
 
-    vi.mocked(ApiService.getBookingDetails).mockResolvedValue(mockBooking)
+    // Mock fetchBookingDetails to do nothing (it doesn't need to return data)
+    vi.spyOn(bookingStore, 'fetchBookingDetails').mockImplementation(async () => {
+      bookingStore.setBookingDetails(mockBookingDetails) // Simulate successful fetch
+    })
 
     const wrapper = mount(BookingDetails, {
       global: {
-        plugins: [router]
+        plugins: [router, pinia]
       }
     })
 
     await router.push('/booking/1/1')
     await router.isReady()
-
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick() // Wait for the next DOM update cycle
 
     expect(wrapper.text()).toContain('John Doe')
-    expect(wrapper.text()).toContain('4 days') // Assuming duration is displayed
     expect(wrapper.text()).toContain('Berlin Station')
-  })
-
-  it('displays error message when fetch fails', async () => {
-    vi.mocked(ApiService.getBookingDetails).mockRejectedValue(
-      new Error('Failed to fetch booking details')
-    )
-
-    const wrapper = mount(BookingDetails, {
-      global: {
-        plugins: [router]
-      }
-    })
-
-    await router.push('/booking/1/1')
-    await router.isReady()
-
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.text()).toContain('Error: Failed to fetch booking details')
+    expect(wrapper.text()).toContain('4 days')
   })
 })

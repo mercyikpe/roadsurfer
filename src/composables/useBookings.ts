@@ -1,7 +1,7 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useBookingStore } from '@/stores/BookingStore'
 import { parseISO, format, min } from 'date-fns'
-import type { Booking, Station } from '@/types'
+import type { Station } from '@/types'
 
 export function useBookings() {
   const bookingStore = useBookingStore()
