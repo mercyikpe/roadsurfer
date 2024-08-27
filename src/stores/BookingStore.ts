@@ -25,41 +25,29 @@ export const useBookingStore = defineStore('booking', {
       this.bookingDetails = booking
     },
     async fetchStations(searchQuery: string = '') {
-      try {
-        const stations = await ApiService.getStations(searchQuery)
-        if (stations.length > 0) {
-          this.setSelectedStation(stations[0])
-          await this.fetchBookings(stations[0].id) // Fetch bookings for the first station
-        }
-      } catch (error) {
-        throw new Error('Failed to fetch stations')
+      const stations = await ApiService.getStations(searchQuery)
+      if (stations.length > 0) {
+        this.setSelectedStation(stations[0])
+        await this.fetchBookings(stations[0].id) // Fetch bookings for the first station
       }
     },
     async fetchBookings(stationId: string) {
-      try {
-        const bookings = await ApiService.getBookings(stationId, '', '')
-        this.setBookings(bookings)
-      } catch (error) {
-        throw new Error('Failed to fetch bookings')
-      }
+      const bookings = await ApiService.getBookings(stationId, '', '')
+      this.setBookings(bookings)
     },
     async fetchBookingDetails(stationId: string, bookingId: string) {
-      try {
-        const bookingDetails = await ApiService.getBookingDetails(stationId, bookingId)
+      const bookingDetails = await ApiService.getBookingDetails(stationId, bookingId)
 
-        // Fetch all stations to find the name of the station for this booking
-        const stations = await ApiService.getStations('')
-        const matchedStation = stations.find(
-          (station) => station.id === bookingDetails.pickupReturnStationId
-        )
+      // Fetch all stations to find the name of the station for this booking
+      const stations = await ApiService.getStations('')
+      const matchedStation = stations.find(
+        (station) => station.id === bookingDetails.pickupReturnStationId
+      )
 
-        this.setBookingDetails({
-          ...bookingDetails,
-          stationName: matchedStation ? matchedStation.name : 'Unknown Station'
-        })
-      } catch (error) {
-        throw new Error('Failed to fetch booking details')
-      }
+      this.setBookingDetails({
+        ...bookingDetails,
+        stationName: matchedStation ? matchedStation.name : 'Unknown Station'
+      })
     }
   }
 })

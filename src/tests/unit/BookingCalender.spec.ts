@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import BookingCalendar from '@/components/BookingCalendar.vue'
-// import { useBookingStore } from '@/stores/BookingStore'
 import type { Station, Booking } from '@/types'
 import { ApiService } from '@/services/ApiService'
 
