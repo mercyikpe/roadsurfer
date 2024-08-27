@@ -1,41 +1,70 @@
 <template>
   <div class="p-4">
-    <h2 class="text-2xl font-bold mb-4">Booking Details</h2>
-
     <SkeletonLoader v-if="loading" />
 
     <ErrorCard v-else-if="error" :error-message="error" />
 
-    <section v-else-if="bookingStore.bookingDetails">
-      <div>
-        <p><strong>Customer Name:</strong> {{ bookingStore.bookingDetails.customerName }}</p>
-        <p><strong>Start Date:</strong> {{ formatDate(bookingStore.bookingDetails.startDate) }}</p>
-        <p><strong>End Date:</strong> {{ formatDate(bookingStore.bookingDetails.endDate) }}</p>
-        <p><strong>Duration:</strong> {{ bookingDuration }} days</p>
-        <p><strong>Pickup-Return Station:</strong> {{ bookingStore.bookingDetails.stationName }}</p>
+    <div v-else-if="bookingStore.bookingDetails" class="max-w-3xl mx-auto my-6">
+      <div class="flex justify-between items-end">
+        <div class="px-4 sm:px-0">
+          <h3 class="text-base font-semibold leading-7 text-gray-900">Booking Details</h3>
+        </div>
+
+        <RouterLink to="/" class="mt-4 px-4 py-2 bg-primary-green text-black rounded font-semibold"
+          >Back to Calender</RouterLink
+        >
       </div>
 
-      <button @click="goBack" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-        Back to Calendar
-      </button>
-    </section>
+      <div class="mt-6 border-t border-gray-100">
+        <dl class="divide-y divide-gray-100">
+          <div class="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Customer Name</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{ bookingStore.bookingDetails.customerName }}
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Start Date</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{ formatDate(bookingStore.bookingDetails.startDate) }}
+            </dd>
+          </div>
+          <div class="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt class="text-sm font-medium leading-6 text-gray-900">End Date</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{ formatDate(bookingStore.bookingDetails.endDate) }}
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Duration</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{ bookingDuration }} days
+            </dd>
+          </div>
+          <div class="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Pickup-Return Station</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{ bookingStore.bookingDetails.stationName }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useBookingStore } from '@/stores/BookingStore'
 import SkeletonLoader from './SkeletonLoader.vue'
 import ErrorCard from './ErrorCard.vue'
 
 const route = useRoute()
-const router = useRouter()
 const bookingStore = useBookingStore()
 
 const error = ref<string | null>(null)
 
-console.log('Error', error)
 const loading = ref<boolean>(true)
 
 const stationId = computed(() => route.params.stationId as string)
@@ -64,10 +93,6 @@ const fetchBookingDetails = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const goBack = () => {
-  router.push('/')
 }
 
 onMounted(fetchBookingDetails)

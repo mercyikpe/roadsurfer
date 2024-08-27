@@ -6,38 +6,18 @@
   <ErrorCard v-else-if="errorMessage" :error-message="errorMessage" />
 
   <div v-else class="space-y-8 py-[5%]">
-    <div
-      class="flex flex-col md:flow-row space-y-4 justify-between items-center max-w-xl md:ml-auto"
-    >
-      <p class="text-xl font-bold">{{ formattedWeekRange }}</p>
-
-      <div class="space-x-6">
-        <button
-          @click="previousWeek"
-          class="px-4 py-2 bg-primary-green text-black rounded font-semibold"
-        >
-          Previous
-        </button>
-        <button
-          @click="nextWeek"
-          class="px-4 py-2 bg-primary-green text-black rounded font-semibold"
-        >
-          Next
-        </button>
-      </div>
-    </div>
-
-    <section class="flex flex-col md:flex-row max-w-3xl gap-8">
+    <section class="flex flex-col md:flex-row items-center justify-center gap-8">
       <p
         v-if="bookingStore.selectedStation"
         class="text-lg font-semibold whitespace-nowrap text-center md:text-left"
       >
         Current Station: {{ bookingStore.selectedStation.name }}
       </p>
+
       <Autocomplete @selected="handleStationSelected" />
     </section>
 
-    <div class="bg-white md:py-8 px-4 lg:max-w-7xl lg:mx-auto lg:px-8">
+    <section class="bg-white md:py-8">
       <div
         class="inline-flex flex-col space-y-1 items-start justify-start h-full w-full overflow-x-auto"
       >
@@ -76,6 +56,43 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <div class="flex flex-col-reverse md:flex-row justify-between flex-re">
+      <section class="space-y-2 text-center md:text-left mt-10 md:mt-auto">
+        <p>
+          Booking Start date
+          <span
+            class="ml-3 bg-primary-yellow text-blue-800 text-xs font-medium me-2 px-2.5 py-1 rounded"
+          ></span>
+        </p>
+
+        <p>
+          Booking End date
+          <span
+            class="ml-4 bg-primary-blue text-blue-800 text-xs font-medium me-2 px-2.5 py-1 rounded"
+          ></span>
+        </p>
+      </section>
+
+      <section class="flex flex-col md:flex-row items-center justify-center gap-8">
+        <p class="text-xl font-bold">{{ formattedWeekRange }}</p>
+
+        <div class="space-x-6 flex items-center">
+          <button
+            @click="previousWeek"
+            class="px-4 py-2 bg-primary-green text-black rounded font-semibold"
+          >
+            Previous
+          </button>
+          <button
+            @click="nextWeek"
+            class="px-4 py-2 bg-primary-green text-black rounded font-semibold"
+          >
+            Next
+          </button>
+        </div>
+      </section>
     </div>
   </div>
 </template>

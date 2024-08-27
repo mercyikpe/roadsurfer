@@ -5,7 +5,7 @@ import Footer from '@/components/layouts/Footer.vue'
 </script>
 
 <template>
-  <main class="min-h-screen flex flex-col justify-between">
+  <main class="min-h-screen flex flex-col justify-between font-encode-sans">
     <section class="flex-grow">
       <Header />
 

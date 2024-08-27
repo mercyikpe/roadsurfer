@@ -82,17 +82,17 @@ describe('BookingCalendar', () => {
     await router.isReady()
     await wrapper.vm.$nextTick()
 
-    const initialWeekRange = wrapper.find('h2').text()
+    const initialWeekRange = wrapper.find('p.text-xl.font-bold').text()
 
     // Click next week button
     await wrapper.find('button:last-child').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('h2').text()).not.toBe(initialWeekRange)
+    expect(wrapper.find('p.text-xl.font-bold').text()).not.toBe(initialWeekRange)
 
     // Click previous week button
     await wrapper.find('button:first-child').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('h2').text()).toBe(initialWeekRange)
+    expect(wrapper.find('p.text-xl.font-bold').text()).toBe(initialWeekRange)
   })
 
   it('updates bookings when searching a new station', async () => {

@@ -2,6 +2,9 @@
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
+    fontFamily: {
+      'encode-sans': ['Encode Sans', 'sans-serif']
+    },
     extend: {
       colors: {
         'primary-green': '#6bbbae',
