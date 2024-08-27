@@ -23,19 +23,27 @@
     <Autocomplete @selected="handleStationSelected" />
 
     <div class="grid grid-cols-7 gap-4">
-      <div v-for="day in weekDays" :key="day.date" class="border rounded p-4">
+      <div
+        v-for="day in weekDays"
+        :key="day.date"
+        class="border rounded p-4"
+        @dragover.prevent
+        @drop="handleDrop(day.date)"
+      >
         <h3 class="font-bold">{{ day.name }}</h3>
         <p class="text-sm">{{ formatDisplayDate(day.date) }}</p>
         <ul class="mt-2 space-y-2">
           <li
             v-for="bookingEntry in bookingsForDay(day.date)"
             :key="bookingEntry.booking.id"
+            draggable="true"
+            @dragstart="handleDragStart(bookingEntry)"
             @click="showBookingDetails(bookingEntry.booking)"
+            class="p-2 rounded cursor-pointer text-xs space-y-2"
             :class="{
               'bg-blue-500 text-white': bookingEntry.isStart,
               'bg-red-500 text-white': bookingEntry.isEnd
             }"
-            class="p-2 rounded cursor-pointer text-xs space-y-2"
           >
             <span class="block">{{ bookingEntry.booking.customerName }}</span>
             <span class="block">{{ bookingEntry.isStart ? 'Booking Start' : '' }}</span>
@@ -57,7 +65,7 @@ import { useRouter } from 'vue-router'
 import { useBookingStore } from '@/stores/BookingStore'
 import { startOfWeek, addDays, format, parseISO, min } from 'date-fns'
 import Autocomplete from './Autocomplete.vue'
-import type { Booking, Station } from '@/types'
+import type { Booking } from '@/types'
 
 const router = useRouter()
 const bookingStore = useBookingStore()
@@ -152,6 +160,47 @@ const fetchInitialData = async () => {
     errorMessage.value = error.message
   } finally {
     isLoading.value = false
+  }
+}
+
+// HTML DRAG AND DROP
+const draggedBooking = ref<{ booking: Booking; isStart: boolean; isEnd: boolean } | null>(null)
+
+const handleDragStart = (bookingEntry: { booking: Booking; isStart: boolean; isEnd: boolean }) => {
+  draggedBooking.value = bookingEntry
+}
+
+const handleDrop = (newDate: string) => {
+  if (!draggedBooking.value) return
+
+  const { booking, isStart, isEnd } = draggedBooking.value
+
+  // Update the booking's start or end date locally
+  if (isStart) {
+    booking.startDate = newDate
+  } else if (isEnd) {
+    booking.endDate = newDate
+  }
+
+  // Log the changes to emulate an API call
+  console.log('imaginary API Call:', {
+    bookingId: booking.id,
+    updatedStartDate: booking.startDate,
+    updatedEndDate: booking.endDate
+  })
+
+  // Update the local bookings array in the store
+  updateLocalBooking(booking)
+
+  // Clear the dragged booking reference
+  draggedBooking.value = null
+}
+
+// Function to update the local booking in the store without re-fetching
+const updateLocalBooking = (updatedBooking: Booking) => {
+  const index = bookingStore.bookings.findIndex((b) => b.id === updatedBooking.id)
+  if (index !== -1) {
+    bookingStore.bookings.splice(index, 1, updatedBooking)
   }
 }
 
