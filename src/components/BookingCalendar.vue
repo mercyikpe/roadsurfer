@@ -12,11 +12,7 @@
       Current Station: {{ bookingStore.selectedStation.name }}
     </p>
 
-    <Autocomplete
-      placeholder="Select a station"
-      :apiUrl="stationsApiUrl"
-      @selected="handleStationSelected"
-    />
+    <Autocomplete :apiUrl="stationsApiUrl" @selected="handleStationSelected" />
     <div class="grid grid-cols-7 gap-4">
       <div v-for="day in weekDays" :key="day.date" class="border rounded p-4">
         <h3 class="font-bold">{{ day.name }}</h3>
@@ -26,7 +22,7 @@
             v-for="booking in bookingsForDay(day.date)"
             :key="booking.id"
             @click="showBookingDetails(booking)"
-            class="bg-blue-100 p-2 rounded cursor-pointer"
+            class="bg-blue-100 text-black p-2 rounded cursor-pointer"
           >
             {{ booking.id }} - {{ booking.customerName }}
           </li>

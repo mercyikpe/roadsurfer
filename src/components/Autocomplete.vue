@@ -5,9 +5,10 @@
       v-model="searchQuery"
       @input="handleInput"
       class="w-full p-2 border rounded"
-      :placeholder="placeholder"
+      placeholder="Type a station city"
     />
     <ul v-if="showResults" class="absolute z-10 w-full bg-white border rounded mt-1">
+      <li v-if="results.length === 0" class="p-2 text-red-500">No results found</li>
       <li
         v-for="result in results"
         :key="result.id"
@@ -25,10 +26,6 @@ import { ref, watch } from 'vue'
 import type { Station } from '@/types'
 import { ApiService } from '@/services/ApiService'
 
-const props = defineProps<{
-  placeholder: string
-}>()
-
 const emit = defineEmits<{
   (e: 'selected', station: Station): void
 }>()
@@ -44,6 +41,8 @@ const handleInput = async () => {
       showResults.value = true
     } catch (error) {
       console.error('Error fetching results:', error)
+      results.value = [] // Clear results on error
+      showResults.value = true
     }
   } else {
     showResults.value = false

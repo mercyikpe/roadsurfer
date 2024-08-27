@@ -8,5 +8,6 @@ export interface Booking {
   customerName: string
   startDate: string
   endDate: string
-  stationName: string
+  stationName?: string
+  pickupReturnStationId: string
 }
