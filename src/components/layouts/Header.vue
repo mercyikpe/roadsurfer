@@ -14,7 +14,6 @@
             />
           </a>
         </div>
-
         <IconsCard />
       </div>
     </div>
@@ -41,8 +40,6 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import IconsCard from '@/components/layouts/IconsCard.vue'
 </script>
-
-<style></style>

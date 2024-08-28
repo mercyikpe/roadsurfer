@@ -29,7 +29,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import IconsCard from '@/components/layouts/IconsCard.vue'
 </script>
 
