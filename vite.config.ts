@@ -5,8 +5,8 @@ import { configDefaults } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig((c) => ({
-  base: '/roadsurfer/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/roadsurfer/' : '/',
   plugins: [vue()],
   test: {
     environment: 'jsdom',

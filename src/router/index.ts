@@ -7,9 +7,8 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/booking/:stationId/:bookingId', component: BookingDetails }
 ]
 
-const router = createRouter({
-  history: createWebHistory(),
+const base = import.meta.env.MODE === 'production' ? 'roadsurfer' : '/'
+export default createRouter({
+  history: createWebHistory(base),
   routes
 })
-
-export default router
