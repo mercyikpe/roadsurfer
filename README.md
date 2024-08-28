@@ -8,6 +8,8 @@ This booking app is a <b>Vue.js 3</b> and <b>TypeScript</b> app that allows user
 <b>Vitest</b> for unit tests <br/>
 <b>Tailwind CSS </b> for styling
 
+#### [Live url: https://mercyikpe.github.io/roadsurfer/](https://mercyikpe.github.io/roadsurfer/)
+
 ### Table of Contents
 
 1. [Overview](#documentation)
