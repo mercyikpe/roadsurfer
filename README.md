@@ -1,18 +1,43 @@
-# roadsurfer
+# roadsurfer Frontend challenge
 
-This template should help get you started developing with Vue 3 in Vite.
+## Documentation
 
-## Recommended IDE Setup
+This booking app is a <b>Vue.js 3</b> and <b>TypeScript</b> app that allows users to view and manage bookings for various stations. It uses: <br/>
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+<b>Pinia</b> for state management <br/>
+<b>Vitest</b> for unit tests <br/>
+<b>Tailwind CSS </b> for styling
 
-## Type Support for `.vue` Imports in TS
+### Table of Contents
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+1. [Overview](#documentation)
+2. [Key Features](#key-features)
+3. [Data Flow of the Calander page](#data-flow-of-the-calander-page)
+4. [Data Flow of the Booking details page](#data-flow-of-the-booking-details-page)
+5. [Project Setup](#project-setup)
 
-## Customize configuration
+## Key Features
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- Station Selection: Users can select a station using the Autocomplete component. </br>
+- Weekly Calendar View: Displays bookings for a week, with the ability to navigate between weeks. </br>
+- Booking Display: Shows bookings as draggable items, color-coded for start and end dates. </br>
+- Drag and Drop: Allows users to move bookings between days. </br>
+- Booking Details: Users can click on a booking to view its details. </br>
+- Error Handling: Displays error messages when API calls fail. </br>
+- Loading State: Shows a skeleton loader while fetching data.
+
+## Data Flow of the Calander page
+
+On mount, the component fetches initial data, including stations and bookings. </br>
+When a user selects a station, it fetches bookings for that station. </br>
+Users can navigate between weeks, which updates the displayed bookings. </br>
+Drag-and-drop actions update the bookings local state.
+
+## Data Flow of the Booking details page
+
+On mount, the component fetches booking details using the provided stationId and bookingId </br>
+The fetched data is stored in the Pinia store </br>
+The component reactively displays the data from the store </br>
 
 ## Project Setup
 
