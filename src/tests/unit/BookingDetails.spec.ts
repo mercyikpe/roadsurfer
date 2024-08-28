@@ -28,7 +28,7 @@ describe('BookingDetails.vue', () => {
       pickupReturnStationId: '1'
     }
 
-    // Mock fetchBookingDetails to do nothing (it doesn't need to return data)
+    // Mock fetchBookingDetails
     vi.spyOn(bookingStore, 'fetchBookingDetails').mockImplementation(async () => {
       bookingStore.setBookingDetails(mockBookingDetails) // Simulate successful fetch
     })
@@ -41,7 +41,7 @@ describe('BookingDetails.vue', () => {
 
     await router.push('/booking/1/1')
     await router.isReady()
-    await wrapper.vm.$nextTick() // Wait for the next DOM update cycle
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('John Doe')
     expect(wrapper.text()).toContain('Berlin Station')
