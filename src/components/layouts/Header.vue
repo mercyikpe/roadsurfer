@@ -20,7 +20,7 @@
   </nav>
 
   <section
-    class="relative bg-[url(https://roadsurfer.com/wp-content/uploads/myroadsurfer-camper-van-sprinter-campervan-motorhomes-for-sale-overview.jpg)] bg-cover bg-center bg-no-repeat"
+    class="max-h-[30rem] relative bg-[url(https://roadsurfer.com/wp-content/uploads/myroadsurfer-camper-van-sprinter-campervan-motorhomes-for-sale-overview.jpg)] bg-cover bg-center bg-no-repeat"
   >
     <div
       class="absolute inset-0 bg-gradient-to-br from-gray-900/75 to-transparent sm:bg-transparent sm:from-gray-900/95 sm:to-gray-900/25"
